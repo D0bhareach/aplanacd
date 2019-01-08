@@ -18,7 +18,7 @@ public class User {
 
 @Id
 @Column(name="id")
-@GeneratedValue(strategy=GenerationType.AUTO)
+@GeneratedValue(strategy=GenerationType.IDENTITY)
 private Long id;
 
 @Column(name="name", length=100)
@@ -37,7 +37,7 @@ private String password;
 // @OneToMany(mappedBy="user")
 // private Set<Disk> disks;
 
-    User(String name, String address, String login, String password) {
+    public User(String name, String address, String login, String password) {
         this.name = name;
         this.address = address;
         this.login = login;

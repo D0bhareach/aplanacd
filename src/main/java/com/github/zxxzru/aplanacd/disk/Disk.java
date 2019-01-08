@@ -1,6 +1,5 @@
 package com.github.zxxzru.aplanacd.disk;
 
-import java.util.Set;
 import lombok.Data;
 import com.github.zxxzru.aplanacd.user.User;
 import javax.persistence.Entity;
@@ -19,7 +18,7 @@ public class Disk {
 
 @Id
 @Column(name="id")
-@GeneratedValue(strategy=GenerationType.AUTO)
+@GeneratedValue(strategy=GenerationType.IDENTITY)
 private Long id;
 
 @Column(name="name", length=100)
@@ -35,7 +34,7 @@ private Integer year;
 @JoinColumn(name="user_id", nullable=false)
 private User user;
 
-    Disk(String name, String company, Integer year, User user) {
+    public Disk(String name, String company, Integer year, User user) {
         this.name = name;
         this.company = company;
         this.year = year;
