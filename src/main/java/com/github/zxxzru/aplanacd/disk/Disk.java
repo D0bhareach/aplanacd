@@ -27,6 +27,7 @@ private String name;
 @Column(name="company", length=25)
 private String company;
 
+
 @Column(name="year")
 private Integer year;
 
@@ -53,13 +54,13 @@ private User user;
 // public void setCompany(String c) {
 // this.company = c;
 // }
-// public void setYear(Integer y) {
-// this.year = y;
-// }
-// public void setId(Long id) {
-// this.id = id;
-// }
-//
+public void setYear(Integer y) {
+ this.year = y != null ? y : 0;
+}
+//  public void setId(Long id) {
+//  this.id = id != null ? id : 0;
+//  }
+// //
 // // getters
 // public Long getId(){
 // return this.id;
