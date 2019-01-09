@@ -2,6 +2,8 @@ package com.github.zxxzru.aplanacd;
 
 import com.github.zxxzru.aplanacd.disk.Disk;
 import com.github.zxxzru.aplanacd.disk.DiskRepository;
+import com.github.zxxzru.aplanacd.takenitem.TakenItem;
+import com.github.zxxzru.aplanacd.takenitem.TakenItemRepository;
 import com.github.zxxzru.aplanacd.user.User;
 import com.github.zxxzru.aplanacd.user.UserRepository;
 
@@ -49,6 +51,12 @@ class LoadData {
             new Disk("disk-20-name", "disk-20-company", 20, u3),
     };
 
+    TakenItem[] takenItems = {
+      new TakenItem(new Long(1), new Long(3)),
+            new TakenItem(new Long(20), new Long(2)),
+            new TakenItem(new Long(2), new Long(2)),
+    };
+
     private String makeName(String n, String pattern){
         int index = n != null && n.length() > 0 ? n.lastIndexOf(pattern) : -1;
         return index > 0 ? n.substring(0, index) : "undefined";
@@ -75,6 +83,18 @@ class LoadData {
                         log.info(String.format("Preloading %s : %s",
                                 makeName(disk.getName(), "-"),
                                 diskRepo.save(disk)));
+                    });
+
+        };
+    }
+
+    @Bean
+    CommandLineRunner initTakenItem(TakenItemRepository takenItemRepository) {
+        return args -> {
+            Arrays.stream(takenItems)
+                    .forEach(item -> {
+                        log.info(String.format("%s",
+                                takenItemRepository.save(item)));
                     });
 
         };

@@ -2,16 +2,15 @@ package com.github.zxxzru.aplanacd.takenitem;
 
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
+import javax.persistence.*;
 
 @Data
 @Entity
 @Table(name="taken_item")
+@SqlResultSetMapping(
+        name = "takenItem",
+        entities = @EntityResult(entityClass = TakenItem.class)
+)
 public class TakenItem {
 
 @Id
@@ -27,7 +26,7 @@ private Long userId;
 
     TakenItem(){};
 
-   TakenItem(Long diskId, Long userId) {
+   public TakenItem(Long diskId, Long userId) {
         this.diskId = diskId;
         this.userId = userId;
     }
