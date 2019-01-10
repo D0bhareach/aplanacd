@@ -2,6 +2,8 @@ package com.github.zxxzru.aplanacd.disk;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -38,16 +40,6 @@ class DiskController {
         this.userRepository = userRepository;
     }
 
-    // Aggregate root
-
-    @GetMapping("/disk")
-    Resources<Resource<Disk>> all() {
-        List<Resource<Disk>>disks = repository.findAll()
-                .stream()
-                .map(assembler::toResource)
-                .collect(Collectors.toList());
-        return new Resources<>(disks, assembler.allToResource());
-    }
 
     private final User getUserById(Long id){
         id = id != null && id > 0 ? id : 1;
@@ -73,13 +65,32 @@ class DiskController {
 
     }
 
+    // Aggregate root
+
+    @GetMapping("/disk")
+    Resources<Resource<Disk>> all() {
+        List<Resource<Disk>>disks = repository.findAll()
+                .stream()
+                .map(assembler::toResource)
+                .collect(Collectors.toList());
+        return new Resources<>(disks, assembler.allToResource());
+    }
+
+    @GetMapping("/disk/available")
+    Resources<Resource<Disk>> allAvailable() {
+        List <Resource<Disk>>resDisks = new ArrayList<>();
+         List<Disk>disks = repository.getAvailableDisks();
+        Iterator<Disk> itr = disks.iterator();
+        while (itr.hasNext()){
+            Disk d = itr.next();
+            resDisks.add(assembler.toResource(d));
+        }
+        return new Resources<>(resDisks, assembler.allToResource());
+    }
+
+
     @PostMapping("/disk")
    ResponseEntity<?> newDisk(@RequestBody Disk newDisk) throws URISyntaxException {
-        // Long userId = newDisk.getUser().getId();
-        // User user = getUserById(userId);
-        // // TODO: What to do when Optional has nothing?
-        // // right now  fake User with ID: 1 is created at start up.
-        // newDisk.setUser(user);
         newDisk = getNotNullDisk(newDisk);
         Resource<Disk> resource = assembler.toResource(repository.save(newDisk));
 
@@ -101,10 +112,6 @@ class DiskController {
     @PutMapping("/disk/{id}")
     ResponseEntity<?>replaceDisk(@RequestBody Disk newDisk, @PathVariable Long id)
             throws URISyntaxException, DiskNotFoundException {
-        // Long userId = newDisk.getUser().getId();
-        // User user = getUserById(userId);
-        // // reset user in case it was not set before
-        // newDisk.setUser(user);
         Disk oldDisk = repository.findById(id)
                 .orElseThrow(() -> new DiskNotFoundException(id));
         // get values for Disk from post body
@@ -117,18 +124,7 @@ class DiskController {
         user = user != null ? user : oldDisk.getUser();
 
         Disk resultDisk = new Disk(name, company, year, user);
-                // TODO: values below are not necessarily not null
-                // .map(disk -> {
-                //     disk.setName(newDisk.getName());
-                //     disk.setCompany(newDisk.getCompany());
-                //     disk.setYear(newDisk.getYear());
-                //     disk.setUser(newDisk.getUser());
                     resultDisk = repository.save(resultDisk);
-                // })
-                // .orElseGet(() -> {
-                //     newDisk.setId(id);
-                    // oldDisk = repository.save(newDisk);
-                // });
         Resource<Disk> resource = assembler.toResource(resultDisk);
         return ResponseEntity
                 .created(new URI(resource.getId().expand().getHref()))
